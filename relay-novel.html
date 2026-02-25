@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>릴레이 소설방</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:     #0d0d0f; --sur:#141418; --sur2:#1c1c22;
+  --bor:    #2a2a35; --bor2:#3a3a48;
+  --tx:     #e8e4d9; --tx2:#9a9488; --tx3:#5c5852;
+  --am:     #d4922a; --am2:#f0b84a; --red:#c0524a;
+  --serif:  'Nanum Myeongjo','Crimson Text',Georgia,serif;
+  --sans:   'Nanum Gothic',sans-serif;
+  --r:12px; --t:0.22s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--sur)}::-webkit-scrollbar-thumb{background:var(--bor2);border-radius:3px}
+
+/* HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,15,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--bor)}
+.logo{font-family:var(--serif);font-size:1.1rem;color:var(--am);cursor:pointer;transition:opacity var(--t)}
+.logo:hover{opacity:.8}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;font-family:var(--sans);font-size:.85rem;font-weight:700;cursor:pointer;transition:all var(--t);border:none}
+.btn-p{background:var(--am);color:#0d0d0f}.btn-p:hover{background:var(--am2);transform:translateY(-1px)}
+.btn-g{background:transparent;color:var(--tx2);border:1px solid var(--bor2)}.btn-g:hover{border-color:var(--am);color:var(--am)}
+.btn-sm{padding:5px 13px;font-size:.78rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* VIEWS */
+.view{display:none;min-height:100vh;padding-top:58px}.view.on{display:block}
+
+/* HOME */
+.hero{text-align:center;padding:65px 20px 48px}
+.hero::after{content:'';display:block;width:1px;height:44px;background:linear-gradient(to bottom,var(--am),transparent);margin:34px auto 0}
+.hero h1{font-family:var(--serif);font-size:clamp(2rem,6vw,3.2rem);font-weight:800;line-height:1.2;letter-spacing:-.02em}
+.hero h1 span{color:var(--am)}
+.hero p{margin-top:14px;color:var(--tx2);font-size:.93rem;line-height:1.7}
+.rooms-wrap{max-width:940px;margin:0 auto;padding:0 20px 80px}
+.rooms-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--bor)}
+.rooms-top h2{font-family:var(--serif);font-size:1.05rem;color:var(--tx2);font-weight:400}
+.cnt{font-size:.78rem;color:var(--tx3);background:var(--sur2);padding:3px 10px;border-radius:20px;border:1px solid var(--bor)}
+.rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:15px}
+
+/* CARD */
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:22px;cursor:pointer;transition:all var(--t);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--am),transparent);opacity:0;transition:opacity var(--t)}
+.card:hover{border-color:var(--bor2);transform:translateY(-2px);box-shadow:0 12px 36px rgba(0,0,0,.4)}
+.card:hover::before{opacity:1}
+.card-n{font-size:.7rem;color:var(--am);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
+.card-t{font-family:var(--serif);font-size:1.15rem;font-weight:700;line-height:1.4;margin-bottom:10px}
+.card-p{font-family:'Crimson Text',Georgia,serif;font-size:.9rem;color:var(--tx2);line-height:1.6;font-style:italic;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-f{margin-top:14px;padding-top:13px;border-top:1px solid var(--bor);display:flex;justify-content:space-between;align-items:center}
+.card-stats{display:flex;gap:11px}
+.stat{font-size:.76rem;color:var(--tx3)}.stat strong{color:var(--tx2)}
+.card-dt{font-size:.73rem;color:var(--tx3)}
+
+/* STATES */
+.empty{grid-column:1/-1;text-align:center;padding:56px 20px;color:var(--tx3)}
+.empty .ic{font-size:2.6rem;margin-bottom:10px}
+.empty p{font-size:.88rem;line-height:1.7}
+.loading{text-align:center;padding:56px;color:var(--tx3);font-size:.88rem}
+.spin{display:inline-block;width:22px;height:22px;border:2px solid var(--bor2);border-top-color:var(--am);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ROOM VIEW */
+.room-in{max-width:700px;margin:0 auto;padding:36px 20px 90px}
+.back{display:inline-flex;align-items:center;gap:5px;font-size:.8rem;color:var(--tx3);cursor:pointer;margin-bottom:30px;background:none;border:none;transition:color var(--t)}.back:hover{color:var(--am)}
+.rhead{text-align:center;margin-bottom:46px;padding-bottom:36px;border-bottom:1px solid var(--bor)}
+.rbadge{display:inline-block;font-size:.7rem;font-weight:700;color:var(--am);letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(212,146,42,.3);padding:3px 12px;border-radius:20px;margin-bottom:12px}
+.rtitle{font-family:var(--serif);font-size:clamp(1.5rem,5vw,2.3rem);font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.rmeta{margin-top:12px;font-size:.78rem;color:var(--tx3)}.rmeta span{color:var(--tx2)}
+
+/* PARAGRAPHS */
+.plist{display:flex;flex-direction:column}
+.para{position:relative;padding:26px 0 26px 26px;border-left:1px solid var(--bor);animation:fadeUp .35s ease both}
+.para:last-child{border-left:1px solid transparent}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.pdot{position:absolute;left:-5px;top:34px;width:9px;height:9px;border-radius:50%;background:var(--bor2);border:2px solid var(--bg);transition:background var(--t)}
+.para:hover .pdot{background:var(--am)}
+.pwho{display:flex;align-items:center;gap:7px;margin-bottom:11px}
+.av{width:26px;height:26px;border-radius:50%;background:var(--sur2);border:1px solid var(--bor2);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--am);flex-shrink:0}
+.pauth{font-size:.78rem;font-weight:700;color:var(--tx2)}
+.ptime{font-size:.7rem;color:var(--tx3)}
+.ptxt{font-family:var(--serif);font-size:1.06rem;line-height:1.9;color:var(--tx);word-break:keep-all}
+.pfoot{margin-top:13px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.divider{display:flex;align-items:center;gap:10px;padding:6px 0 6px 26px;color:var(--tx3);font-size:.7rem;letter-spacing:.07em}
+.divider::before{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--bor),transparent)}
+
+/* REACTIONS */
+.rxns{display:flex;gap:5px;flex-wrap:wrap}
+.rxn{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;border-radius:20px;background:var(--sur2);border:1px solid var(--bor);font-size:.8rem;cursor:pointer;transition:all var(--t);color:var(--tx2)}
+.rxn:hover{border-color:var(--am);transform:scale(1.06)}.rxn.on{background:rgba(212,146,42,.12);border-color:rgba(212,146,42,.4);color:var(--am2)}
+.rxn-c{font-size:.73rem;font-weight:700}
+.add-rxn{padding:4px 8px;border-radius:20px;background:transparent;border:1px dashed var(--bor2);font-size:.78rem;cursor:pointer;color:var(--tx3);transition:all var(--t)}.add-rxn:hover{border-color:var(--am);color:var(--am)}
+.edit-btn{margin-left:auto;padding:4px 9px;border-radius:20px;background:transparent;border:1px solid var(--bor);font-size:.73rem;cursor:pointer;color:var(--tx3);transition:all var(--t)}.edit-btn:hover{border-color:rgba(192,82,74,.4);color:var(--red)}.edit-btn.on{border-color:var(--red);color:var(--red);background:rgba(192,82,74,.08)}
+
+/* EMOJI PICKER */
+.epick{position:absolute;z-index:200;background:var(--sur2);border:1px solid var(--bor2);border-radius:12px;padding:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:196px;box-shadow:0 14px 44px rgba(0,0,0,.5);animation:popIn .14s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.9) translateY(-4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.epick span{font-size:1.28rem;cursor:pointer;padding:2px;border-radius:5px;transition:transform var(--t)}.epick span:hover{transform:scale(1.3)}
+
+/* ADD PARA */
+.add-sec{margin-top:38px;padding:26px;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r)}
+.add-sec h3{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--tx2);margin-bottom:18px}
+.fg{margin-bottom:14px}
+.lbl{display:block;font-size:.76rem;font-weight:700;color:var(--tx2);margin-bottom:5px;letter-spacing:.04em}
+.inp,.ta{width:100%;background:var(--sur2);border:1px solid var(--bor2);border-radius:8px;color:var(--tx);font-family:var(--sans);font-size:.88rem;padding:9px 13px;outline:none;transition:border-color var(--t);resize:none}
+.ta{font-family:var(--serif);font-size:.98rem;line-height:1.8;min-height:155px}
+.inp:focus,.ta:focus{border-color:var(--am)}
+.inp::placeholder,.ta::placeholder{color:var(--tx3)}
+.cc{text-align:right;font-size:.73rem;color:var(--tx3);margin-top:3px}.cc.warn{color:var(--red)}
+.nsaved{font-size:.75rem;color:var(--tx3);margin-top:3px}.nsaved strong{color:var(--am)}
+
+/* CONTRIB */
+.csec{margin-top:28px;padding:18px 22px;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r)}
+.ctitle{font-size:.75rem;font-weight:700;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.clist{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:flex;align-items:center;gap:5px;background:var(--sur2);border:1px solid var(--bor);border-radius:20px;padding:5px 11px;font-size:.78rem;color:var(--tx2)}
+.chav{width:16px;height:16px;border-radius:50%;background:var(--bor2);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:var(--am)}
+.chc{font-size:.68rem;color:var(--tx3)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.76);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity var(--t)}
+.overlay.on{opacity:1;pointer-events:all}
+.modal{background:var(--sur);border:1px solid var(--bor2);border-radius:16px;width:100%;max-width:490px;padding:30px;transform:translateY(18px) scale(.97);transition:transform var(--t);max-height:92vh;overflow-y:auto}
+.overlay.on .modal{transform:none}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.mtitle{font-family:var(--serif);font-size:1.25rem;font-weight:800}
+.mclose{background:none;border:none;color:var(--tx3);font-size:1.15rem;cursor:pointer;padding:4px;transition:color var(--t)}.mclose:hover{color:var(--tx)}
+
+/* TOAST */
+.toasts{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--sur2);border:1px solid var(--bor2);border-radius:10px;padding:9px 17px;font-size:.83rem;color:var(--tx);box-shadow:0 8px 28px rgba(0,0,0,.4);white-space:nowrap;animation:tin .22s ease,tout .22s ease 2.5s forwards}
+.toast.ok{border-color:rgba(212,146,42,.5);color:var(--am2)}.toast.err{border-color:rgba(192,82,74,.5);color:#e87070}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tout{to{opacity:0;transform:translateY(-8px)}}
+
+/* MOBILE */
+@media(max-width:600px){
+  .hdr{padding:0 14px}.hero{padding:46px 14px 36px}.rooms-wrap{padding:0 14px 70px}
+  .room-in{padding:22px 14px 80px}.rooms-grid{grid-template-columns:1fr}
+  .modal{padding:22px 18px}.add-sec{padding:18px}.para{padding:20px 0 20px 18px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo" onclick="goHome()">📖 릴레이 소설방</div>
+  <button class="btn btn-p btn-sm" onclick="openCreate()">+ 새 방 만들기</button>
+</header>
+
+<div class="toasts" id="toasts"></div>
+
+<!-- HOME VIEW -->
+<div class="view on" id="vHome">
+  <div class="hero">
+    <h1>릴레이 <span>소설방</span></h1>
+    <p>방을 열고, 첫 문장을 던져보세요.<br/>친구들이 이야기를 이어갑니다.</p>
+  </div>
+  <div class="rooms-wrap">
+    <div class="rooms-top">
+      <h2>열린 이야기 방</h2>
+      <span class="cnt" id="cnt">불러오는 중…</span>
+    </div>
+    <div class="rooms-grid" id="grid">
+      <div class="loading"><div class="spin"></div><br/>이야기를 불러오는 중…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROOM VIEW -->
+<div class="view" id="vRoom">
+  <div class="room-in">
+    <button class="back" onclick="goHome()">← 전체 목록</button>
+    <div class="rhead">
+      <div class="rbadge" id="rNum">방 #1</div>
+      <h1 class="rtitle" id="rTitle"></h1>
+      <p class="rmeta"><span id="rBy"></span> 이(가) 시작 &middot; <span id="rPC">0</span>개의 단락 &middot; <span id="rCC">0</span>명 참여</p>
+    </div>
+    <div class="plist" id="plist"></div>
+    <div class="csec" id="csec" style="display:none">
+      <div class="ctitle">✍ 참여한 작가들</div>
+      <div class="clist" id="clist"></div>
+    </div>
+    <div class="add-sec">
+      <h3>이야기를 이어주세요</h3>
+      <div class="fg">
+        <label class="lbl">닉네임</label>
+        <input class="inp" id="nickInp" placeholder="나의 이름" maxlength="20" />
+        <div class="nsaved" id="nsaved" style="display:none"></div>
+      </div>
+      <div class="fg">
+        <label class="lbl">이야기 이어쓰기</label>
+        <textarea class="ta" id="paraInp" placeholder="앞의 이야기를 읽고, 자연스럽게 이어주세요…" maxlength="800"></textarea>
+        <div class="cc" id="cc">0 / 800</div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+        <button class="btn btn-g btn-sm" onclick="document.getElementById('paraInp').value=''">초기화</button>
+        <button class="btn btn-p" id="addBtn" onclick="addPara()">이야기 추가하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE MODAL -->
+<div class="overlay" id="mCreate">
+  <div class="modal">
+    <div class="mhdr">
+      <h2 class="mtitle">새 이야기 방 열기</h2>
+      <button class="mclose" onclick="closeCreate()">✕</button>
+    </div>
+    <div class="fg"><label class="lbl">소설 제목</label><input class="inp" id="cTitle" placeholder="이 이야기의 제목은…" maxlength="40"/></div>
+    <div class="fg"><label class="lbl">닉네임 (방장)</label><input class="inp" id="cAuth" placeholder="나의 이름" maxlength="20"/></div>
+    <div class="fg"><label class="lbl">첫 번째 문단</label><textarea class="ta" id="cOpen" placeholder="이야기의 첫 문장을 써주세요…" maxlength="800" style="min-height:130px"></textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+      <button class="btn btn-g" onclick="closeCreate()">취소</button>
+      <button class="btn btn-p" id="cBtn" onclick="createRoom()">방 열기 🚪</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  ★ 배포 전 여기 두 줄만 채우면 친구들이 바로 접속해서 쓸 수 있어요!
+//
+//  방법:
+//  1. jsonbin.io 가입 (무료)
+//  2. Dashboard → API Keys → Master Key 복사 → JSONBIN_KEY 에 붙여넣기
+//  3. "+ New Bin" 클릭 → 내용 {} → Create → URL 끝 ID 복사 → BIN_ID 에 붙여넣기
+// ══════════════════════════════════════════════
+const JSONBIN_KEY = 'YOUR_MASTER_KEY_HERE';
+const BIN_ID      = 'YOUR_BIN_ID_HERE';
+// ══════════════════════════════════════════════
+
+const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const HEADERS  = { 'X-Master-Key': JSONBIN_KEY, 'Content-Type': 'application/json' };
+
+let curRoom  = null;
+let curRooms = [];
+
+// ─── API ────────────────────────────────────
+async function dbLoad() {
+  const r = await fetch(API_URL + '/latest', { headers: HEADERS });
+  if (!r.ok) throw new Error(`읽기 오류 ${r.status}`);
+  const j = await r.json();
+  return j.record || { rooms: [], roomData: {} };
+}
+async function dbSave(data) {
+  const r = await fetch(API_URL, { method: 'PUT', headers: HEADERS, body: JSON.stringify(data) });
+  if (!r.ok) throw new Error(`저장 오류 ${r.status}`);
+}
+
+// ─── UTILS ──────────────────────────────────
+const uid  = () => Math.random().toString(36).slice(2,10);
+const esc  = s  => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const ini  = n  => (n||'?').slice(0,2);
+const ago  = iso => {
+  const d=(Date.now()-new Date(iso))/1000;
+  if(d<60) return '방금 전';
+  if(d<3600) return `${Math.floor(d/60)}분 전`;
+  if(d<86400) return `${Math.floor(d/3600)}시간 전`;
+  return `${Math.floor(d/86400)}일 전`;
+};
+const fmt  = iso => { const d=new Date(iso); return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`; };
+const nick = ()  => localStorage.getItem('rn_nick')||'';
+const saveNick = n => localStorage.setItem('rn_nick', n);
+
+// ─── VIEWS ──────────────────────────────────
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0, 0);
+}
+
+// ─── HOME ────────────────────────────────────
+async function goHome() {
+  curRoom = null;
+  showView('vHome');
+  await renderHome();
+}
+
+async function renderHome() {
+  const grid = document.getElementById('grid');
+  const cnt  = document.getElementById('cnt');
+  grid.innerHTML = '<div class="loading"><div class="spin"></div><br/>이야기를 불러오는 중…</div>';
+  try {
+    const data = await dbLoad();
+    const rooms = data.rooms || [];
+    curRooms = rooms;
+    cnt.textContent = `${rooms.length}개의 방`;
+    if (!rooms.length) {
+      grid.innerHTML = '<div class="empty"><div class="ic">✍</div><p>아직 아무도 이야기를 시작하지 않았어요.<br/>첫 번째 방을 열어보세요!</p></div>';
+      return;
+    }
+    grid.innerHTML = '';
+    [...rooms].reverse().forEach((rm, i) => {
+      const n = rooms.length - i;
+      const c = document.createElement('div');
+      c.className = 'card';
+      c.onclick = () => openRoom(rm.id);
+      c.innerHTML = `
+        <div class="card-n">방 #${n}</div>
+        <div class="card-t">${esc(rm.title)}</div>
+        <div class="card-p">"${esc(rm.preview||'')}"</div>
+        <div class="card-f">
+          <div class="card-stats">
+            <span class="stat"><strong>${rm.pc||0}</strong> 단락</span>
+            <span class="stat"><strong>${rm.cc||0}</strong> 참여자</span>
+          </div>
+          <span class="card-dt">${fmt(rm.at)}</span>
+        </div>`;
+      grid.appendChild(c);
+    });
+  } catch(e) {
+    grid.innerHTML = `<div class="empty"><div class="ic">⚠</div><p>불러오기 실패<br/>${e.message}</p></div>`;
+    cnt.textContent = '오류';
+  }
+}
+
+// ─── ROOM ────────────────────────────────────
+async function openRoom(id) {
+  showView('vRoom');
+  document.getElementById('plist').innerHTML = '<div class="loading"><div class="spin"></div><br/>이야기 불러오는 중…</div>';
+  try {
+    const data = await dbLoad();
+    const rm = (data.roomData||{})[id];
+    if (!rm) { toast('방을 찾을 수 없어요.', 'err'); goHome(); return; }
+    curRoom = rm;
+    curRooms = data.rooms||[];
+    renderRoom();
+  } catch(e) { toast('불러오기 실패: '+e.message, 'err'); }
+}
+
+function renderRoom() {
+  const rm = curRoom;
+  const idx = curRooms.findIndex(r => r.id === rm.id);
+  document.getElementById('rNum').textContent = `방 #${idx>=0 ? curRooms.length-idx : '?'}`;
+  document.getElementById('rTitle').textContent = rm.title;
+  document.getElementById('rPC').textContent = rm.paras?.length||0;
+  const cs = getContribs(rm);
+  document.getElementById('rCC').textContent = cs.length;
+  document.getElementById('rBy').textContent = rm.by;
+  renderParas();
+  renderContribs(cs);
+  // nickname
+  const ni = document.getElementById('nickInp');
+  const s = nick(); if(s){ni.value=s;showNS(s);}
+  ni.oninput = () => { if(ni.value.trim()) showNS(ni.value.trim()); };
+  // char count
+  const pi = document.getElementById('paraInp'); pi.value='';
+  pi.oninput = () => { const l=pi.value.length; const el=document.getElementById('cc'); el.textContent=`${l} / 800`; el.className='cc'+(l>700?' warn':''); };
+}
+
+function showNS(n) {
+  const el=document.getElementById('nsaved');
+  el.style.display='block';
+  el.innerHTML=`<strong>${esc(n)}</strong> 으로 참여합니다`;
+}
+
+function renderParas() {
+  const rm=curRoom, list=document.getElementById('plist');
+  list.innerHTML='';
+  const paras=rm.paras||[];
+  if(!paras.length){list.innerHTML='<div class="empty"><p>아직 이야기가 없어요.</p></div>';return;}
+  paras.forEach((p,i)=>{
+    const rxns=p.rxns||{};
+    const rxnHtml=Object.entries(rxns).filter(([,c])=>c>0).map(([e,c])=>{
+      const k=`rx_${rm.id}_${p.id}_${e}`, me=localStorage.getItem(k);
+      return `<button class="rxn ${me?'on':''}" onclick="toggleRxn('${p.id}','${e}')">${e}<span class="rxn-c">${c}</span></button>`;
+    }).join('');
+    const ev=p.ev||0, mvk=`ev_${rm.id}_${p.id}`, mv=localStorage.getItem(mvk);
+    const blk=document.createElement('div');
+    blk.className='para'; blk.dataset.pid=p.id; blk.style.animationDelay=`${i*.04}s`;
+    blk.innerHTML=`
+      <div class="pdot"></div>
+      <div class="pwho"><div class="av">${esc(ini(p.by))}</div><span class="pauth">${esc(p.by)}</span><span class="ptime">${ago(p.at)}</span></div>
+      <div class="ptxt">${esc(p.text)}</div>
+      <div class="pfoot">
+        <div class="rxns">${rxnHtml}<button class="add-rxn" onclick="openEmoji('${p.id}',this)">+ 이모지</button></div>
+        <button class="edit-btn ${mv?'on':''}" onclick="toggleEdit('${p.id}')">✏ 수정 요청${ev>0?` (${ev})`:''}
+        </button>
+      </div>`;
+    list.appendChild(blk);
+    if(i<paras.length-1){const d=document.createElement('div');d.className='divider';d.textContent='— 이야기는 계속됩니다 —';list.appendChild(d);}
+  });
+}
+
+function getContribs(rm) {
+  const m={};
+  (rm.paras||[]).forEach(p=>{m[p.by]=(m[p.by]||0)+1;});
+  return Object.entries(m).map(([n,c])=>({n,c}));
+}
+
+function renderContribs(cs) {
+  const sec=document.getElementById('csec');
+  if(!cs.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  document.getElementById('clist').innerHTML=cs.map(c=>`
+    <div class="chip"><div class="chav">${esc(ini(c.n))}</div>${esc(c.n)}<span class="chc">${c.c}개</span></div>`).join('');
+}
+
+// ─── ADD PARA ────────────────────────────────
+async function addPara() {
+  const n=document.getElementById('nickInp').value.trim();
+  const t=document.getElementById('paraInp').value.trim();
+  if(!n){toast('닉네임을 입력해주세요.','err');return;}
+  if(!t){toast('이야기를 입력해주세요.','err');return;}
+  if(t.length>800){toast('800자 이내로 작성해주세요.','err');return;}
+  const btn=document.getElementById('addBtn'); btn.disabled=true; btn.textContent='저장 중…';
+  try {
+    saveNick(n);
+    const data=await dbLoad();
+    const rm=(data.roomData||{})[curRoom.id];
+    if(!rm) throw new Error('방을 찾을 수 없어요.');
+    rm.paras.push({id:uid(),by:n,text:t,at:new Date().toISOString(),rxns:{},ev:0});
+    data.roomData[rm.id]=rm;
+    const meta=(data.rooms||[]).find(r=>r.id===rm.id);
+    if(meta){meta.pc=rm.paras.length;meta.cc=getContribs(rm).length;}
+    await dbSave(data);
+    curRoom=rm; curRooms=data.rooms||[];
+    renderRoom();
+    document.getElementById('paraInp').value='';
+    toast('이야기가 추가됐어요! ✨','ok');
+    setTimeout(()=>document.getElementById('plist').lastElementChild?.scrollIntoView({behavior:'smooth',block:'end'}),100);
+  } catch(e){toast('저장 실패: '+e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='이야기 추가하기';}
+}
+
+// ─── REACTIONS ───────────────────────────────
+function openEmoji(pid, btn) {
+  document.querySelectorAll('.epick').forEach(e=>e.remove());
+  const emojis=['❤️','😂','😮','😭','🔥','👏','💀','🥺','✨','🎭'];
+  const pk=document.createElement('div'); pk.className='epick';
+  pk.innerHTML=emojis.map(e=>`<span>${e}</span>`).join('');
+  pk.querySelectorAll('span').forEach(s=>s.onclick=()=>{toggleRxn(pid,s.textContent);pk.remove();});
+  btn.parentElement.style.position='relative';
+  btn.parentElement.appendChild(pk);
+  setTimeout(()=>document.addEventListener('click',function h(e){if(!pk.contains(e.target)&&e.target!==btn){pk.remove();document.removeEventListener('click',h);}}),10);
+}
+
+async function toggleRxn(pid, emoji) {
+  if(!curRoom) return;
+  const k=`rx_${curRoom.id}_${pid}_${emoji}`, me=localStorage.getItem(k);
+  try {
+    const data=await dbLoad(); const rm=(data.roomData||{})[curRoom.id]; if(!rm)return;
+    const p=rm.paras.find(x=>x.id===pid); if(!p)return;
+    if(!p.rxns)p.rxns={};
+    if(me){p.rxns[emoji]=Math.max(0,(p.rxns[emoji]||0)-1);localStorage.removeItem(k);}
+    else{p.rxns[emoji]=(p.rxns[emoji]||0)+1;localStorage.setItem(k,'1');}
+    data.roomData[rm.id]=rm; await dbSave(data);
+    curRoom=rm; renderParas();
+    toast(me?'반응을 취소했어요':`${emoji} 반응!`,'ok');
+  } catch(e){toast('반응 저장 실패','err');}
+}
+
+async function toggleEdit(pid) {
+  if(!curRoom) return;
+  const k=`ev_${curRoom.id}_${pid}`, me=localStorage.getItem(k);
+  try {
+    const data=await dbLoad(); const rm=(data.roomData||{})[curRoom.id]; if(!rm)return;
+    const p=rm.paras.find(x=>x.id===pid); if(!p)return;
+    if(me){p.ev=Math.max(0,(p.ev||0)-1);localStorage.removeItem(k);toast('수정 요청을 취소했어요','');}
+    else{p.ev=(p.ev||0)+1;localStorage.setItem(k,'1');toast(`✏ 수정 요청! (현재 ${p.ev}표)`,'ok');}
+    data.roomData[rm.id]=rm; await dbSave(data);
+    curRoom=rm; renderParas();
+  } catch(e){toast('투표 저장 실패','err');}
+}
+
+// ─── CREATE ROOM ─────────────────────────────
+function openCreate() { const s=nick(); if(s)document.getElementById('cAuth').value=s; document.getElementById('mCreate').classList.add('on'); }
+function closeCreate() { document.getElementById('mCreate').classList.remove('on'); }
+
+async function createRoom() {
+  const title=document.getElementById('cTitle').value.trim();
+  const author=document.getElementById('cAuth').value.trim();
+  const opening=document.getElementById('cOpen').value.trim();
+  if(!title){toast('제목을 입력해주세요.','err');return;}
+  if(!author){toast('닉네임을 입력해주세요.','err');return;}
+  if(!opening){toast('첫 문단을 입력해주세요.','err');return;}
+  const btn=document.getElementById('cBtn'); btn.disabled=true; btn.textContent='만드는 중…';
+  try {
+    saveNick(author);
+    const now=new Date().toISOString(), id=uid();
+    const rm={id,title,by:author,at:now,paras:[{id:uid(),by:author,text:opening,at:now,rxns:{},ev:0}]};
+    const data=await dbLoad();
+    if(!data.rooms)data.rooms=[];
+    if(!data.roomData)data.roomData={};
+    data.rooms.push({id,title,by:author,at:now,preview:opening.slice(0,120),pc:1,cc:1});
+    data.roomData[id]=rm;
+    await dbSave(data);
+    curRooms=data.rooms; curRoom=rm;
+    closeCreate();
+    ['cTitle','cOpen'].forEach(x=>document.getElementById(x).value='');
+    toast('이야기 방이 열렸습니다! 📖','ok');
+    showView('vRoom'); renderRoom();
+  } catch(e){toast('방 만들기 실패: '+e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='방 열기 🚪';}
+}
+
+// ─── TOAST ───────────────────────────────────
+function toast(msg, type='') {
+  const c=document.getElementById('toasts'), el=document.createElement('div');
+  el.className=`toast ${type}`; el.textContent=msg; c.appendChild(el);
+  setTimeout(()=>el.remove(), 3000);
+}
+
+// ─── MODAL BACKDROP ──────────────────────────
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+
+// ─── INIT ────────────────────────────────────
+renderHome();
+</script>
+</body>
+</html>
