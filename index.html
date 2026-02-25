@@ -161,7 +161,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
 <div class="toasts" id="toasts"></div>
 
-<!-- HOME VIEW -->
 <div class="view on" id="vHome">
   <div class="hero">
     <h1>릴레이 <span>소설방</span></h1>
@@ -178,7 +177,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- ROOM VIEW -->
 <div class="view" id="vRoom">
   <div class="room-in">
     <button class="back" onclick="goHome()">← 전체 목록</button>
@@ -212,7 +210,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- CREATE MODAL -->
 <div class="overlay" id="mCreate">
   <div class="modal">
     <div class="mhdr">
@@ -231,12 +228,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
 <script>
 // ══════════════════════════════════════════════
-//  ★ 배포 전 여기 두 줄만 채우면 친구들이 바로 접속해서 쓸 수 있어요!
-//
-//  방법:
-//  1. jsonbin.io 가입 (무료)
-//  2. Dashboard → API Keys → Master Key 복사 → JSONBIN_KEY 에 붙여넣기
-//  3. "+ New Bin" 클릭 → 내용 {} → Create → URL 끝 ID 복사 → BIN_ID 에 붙여넣기
+//  핵심 정보 반영 완료!
 // ══════════════════════════════════════════════
 const JSONBIN_KEY = '$2a$10$yQ1pdCu/WMAqSv.sAdSln.V0b7Q/ISsLGsOcMvm/v.uhLfTmzGA62';
 const BIN_ID      = '699ec5f943b1c97be99c34cc';
@@ -248,7 +240,6 @@ const HEADERS  = { 'X-Master-Key': JSONBIN_KEY, 'Content-Type': 'application/jso
 let curRoom  = null;
 let curRooms = [];
 
-// ─── API ────────────────────────────────────
 async function dbLoad() {
   const r = await fetch(API_URL + '/latest', { headers: HEADERS });
   if (!r.ok) throw new Error(`읽기 오류 ${r.status}`);
@@ -260,7 +251,6 @@ async function dbSave(data) {
   if (!r.ok) throw new Error(`저장 오류 ${r.status}`);
 }
 
-// ─── UTILS ──────────────────────────────────
 const uid  = () => Math.random().toString(36).slice(2,10);
 const esc  = s  => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const ini  = n  => (n||'?').slice(0,2);
@@ -275,14 +265,12 @@ const fmt  = iso => { const d=new Date(iso); return `${d.getFullYear()}.${String
 const nick = ()  => localStorage.getItem('rn_nick')||'';
 const saveNick = n => localStorage.setItem('rn_nick', n);
 
-// ─── VIEWS ──────────────────────────────────
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
   document.getElementById(id).classList.add('on');
   window.scrollTo(0, 0);
 }
 
-// ─── HOME ────────────────────────────────────
 async function goHome() {
   curRoom = null;
   showView('vHome');
@@ -327,7 +315,6 @@ async function renderHome() {
   }
 }
 
-// ─── ROOM ────────────────────────────────────
 async function openRoom(id) {
   showView('vRoom');
   document.getElementById('plist').innerHTML = '<div class="loading"><div class="spin"></div><br/>이야기 불러오는 중…</div>';
@@ -352,11 +339,9 @@ function renderRoom() {
   document.getElementById('rBy').textContent = rm.by;
   renderParas();
   renderContribs(cs);
-  // nickname
   const ni = document.getElementById('nickInp');
   const s = nick(); if(s){ni.value=s;showNS(s);}
   ni.oninput = () => { if(ni.value.trim()) showNS(ni.value.trim()); };
-  // char count
   const pi = document.getElementById('paraInp'); pi.value='';
   pi.oninput = () => { const l=pi.value.length; const el=document.getElementById('cc'); el.textContent=`${l} / 800`; el.className='cc'+(l>700?' warn':''); };
 }
@@ -409,7 +394,6 @@ function renderContribs(cs) {
     <div class="chip"><div class="chav">${esc(ini(c.n))}</div>${esc(c.n)}<span class="chc">${c.c}개</span></div>`).join('');
 }
 
-// ─── ADD PARA ────────────────────────────────
 async function addPara() {
   const n=document.getElementById('nickInp').value.trim();
   const t=document.getElementById('paraInp').value.trim();
@@ -436,7 +420,6 @@ async function addPara() {
   finally{btn.disabled=false;btn.textContent='이야기 추가하기';}
 }
 
-// ─── REACTIONS ───────────────────────────────
 function openEmoji(pid, btn) {
   document.querySelectorAll('.epick').forEach(e=>e.remove());
   const emojis=['❤️','😂','😮','😭','🔥','👏','💀','🥺','✨','🎭'];
@@ -476,7 +459,6 @@ async function toggleEdit(pid) {
   } catch(e){toast('투표 저장 실패','err');}
 }
 
-// ─── CREATE ROOM ─────────────────────────────
 function openCreate() { const s=nick(); if(s)document.getElementById('cAuth').value=s; document.getElementById('mCreate').classList.add('on'); }
 function closeCreate() { document.getElementById('mCreate').classList.remove('on'); }
 
@@ -507,17 +489,14 @@ async function createRoom() {
   finally{btn.disabled=false;btn.textContent='방 열기 🚪';}
 }
 
-// ─── TOAST ───────────────────────────────────
 function toast(msg, type='') {
   const c=document.getElementById('toasts'), el=document.createElement('div');
   el.className=`toast ${type}`; el.textContent=msg; c.appendChild(el);
   setTimeout(()=>el.remove(), 3000);
 }
 
-// ─── MODAL BACKDROP ──────────────────────────
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
 
-// ─── INIT ────────────────────────────────────
 renderHome();
 </script>
 </body>
